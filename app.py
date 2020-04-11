@@ -6,6 +6,7 @@ import pickle
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
+import datetime
 
 mapbox_key = "pk.eyJ1IjoibWF4LXNjaHJhZGVyIiwiYSI6ImNrOHQxZ2s3bDAwdXQzbG81NjZpZm96bDEifQ.etUi4OK4ozzaP_P8foZn_A"
 
@@ -13,6 +14,11 @@ APP_PATH = str(pathlib.Path(__file__).parent.resolve())
 
 inst_array = pickle.load(open(os.path.join(APP_PATH, os.path.join("data", "inst_array.txt")), 'rb'))
 summed_array = pickle.load(open(os.path.join(APP_PATH, os.path.join("data", "summed_array.txt")), 'rb'))
+
+data_date = '02/14/2020 07:00:00.000'
+data_date_dt = datetime.datetime.strptime(data_date, '%m/%d/%Y %H:%M:%S.%f')
+data_time_string = str(data_date_dt.month) + '/' +  str(data_date_dt.day) + '/' + str(data_date_dt.day)\
+                   #+ ' ' + str(data_date_dt.hour) + ":00:00"
 
 max_plot_value = 10
 max_plot_value_sum = 1000
@@ -25,7 +31,7 @@ summed = True
 
 colorbar_font = dict(color="black",
                      family="Courier New, monospace",
-                     size=13)
+                     size=14)
 
 def geo_located_heatmap(sum):
     
@@ -45,7 +51,7 @@ def geo_located_heatmap(sum):
             hoverinfo='z',
             showscale=False,
         ),
-            name=str(i + 150),
+            name=(data_date_dt + datetime.timedelta(seconds=i + 150)).strftime("%H:%M:%S"),
         ) for i in range(25)]
     )
 
@@ -93,7 +99,7 @@ def geo_located_heatmap(sum):
         {
             "currentvalue": {
                 "font": colorbar_font,
-                "prefix": "Sim Time: ",
+                "prefix": "Time: ",
                 "visible": True,
                 "xanchor": "right"
             },
@@ -171,7 +177,7 @@ app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 server = app.server
 
 app.layout = html.Div([
-    html.H4('SUMO Emissions',
+    html.H4('US69 Fuel Consumption Estimation on {0}'.format(data_time_string),
             style={
                 "text-align": "center",
                 "font-family": colorbar_font['family'],
@@ -186,7 +192,7 @@ app.layout = html.Div([
             }),
     html.Div([
         html.Div([
-            html.H5('Sum of Fuel Consumption (g)',
+            html.H5('Cummulative Fuel Consumption (g)',
                     style={
                         "text-align": "center",
                         "font-family": colorbar_font['family'],
