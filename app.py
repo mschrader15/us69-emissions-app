@@ -17,7 +17,7 @@ summed_array = pickle.load(open(os.path.join(APP_PATH, os.path.join("data", "sum
 
 data_date = '02/14/2020 07:00:00.000'
 data_date_dt = datetime.datetime.strptime(data_date, '%m/%d/%Y %H:%M:%S.%f')
-data_time_string = str(data_date_dt.month) + '/' +  str(data_date_dt.day) + '/' + str(data_date_dt.day)\
+data_time_string = str(data_date_dt.month) + '/' +  str(data_date_dt.day) + '/' + str(data_date_dt.year)\
                    #+ ' ' + str(data_date_dt.hour) + ":00:00"
 
 max_plot_value = 10
@@ -196,6 +196,7 @@ app.layout = html.Div([
                     style={
                         "text-align": "center",
                         "font-family": colorbar_font['family'],
+                        'padding': 10,
                     }
                     ),
             dcc.Graph(id="summed",
@@ -208,7 +209,9 @@ app.layout = html.Div([
                           'position': "relative",
                           # 'box-shadow': "2px 2px 2px lightgrey",
                       },
-                      figure=geo_located_heatmap(sum=True))
+                      figure=geo_located_heatmap(sum=True),
+                      config={'displayModeBar': False},
+                      )
         ], className="six columns"),
 
         html.Div([
@@ -216,6 +219,7 @@ app.layout = html.Div([
                     style={
                         "text-align": "center",
                         "font-family": colorbar_font['family'],
+                        'padding': 10,
                     }
                     ),
             dcc.Graph(id="instant",
@@ -228,7 +232,9 @@ app.layout = html.Div([
                           'position': "relative",
                           # 'box-shadow': "2px 2px 2px lightgrey",
                       },
-                      figure=geo_located_heatmap(sum=False))
+                      figure=geo_located_heatmap(sum=False),
+                      config={'displayModeBar': False},
+                      )
         ], className="six columns"),
     ], style={
         'height': 800,
