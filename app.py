@@ -11,8 +11,8 @@ mapbox_key = "pk.eyJ1IjoibWF4LXNjaHJhZGVyIiwiYSI6ImNrOHQxZ2s3bDAwdXQzbG81NjZpZm9
 
 APP_PATH = str(pathlib.Path(__file__).parent.resolve())
 
-inst_array = pickle.load(open(os.path.join(APP_PATH, os.path.join("data", "inst_array.txt"))))
-summed_array = pickle.load(open(os.path.join(APP_PATH, os.path.join("data", "summed_array.txt"))))
+inst_array = pickle.load(open(os.path.join(APP_PATH, os.path.join("data", "inst_array.txt")), 'rb'))
+summed_array = pickle.load(open(os.path.join(APP_PATH, os.path.join("data", "summed_array.txt")), 'rb'))
 
 max_plot_value = 10
 max_plot_value_sum = 1000
