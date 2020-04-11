@@ -30,23 +30,23 @@ colorbar_font = dict(color="black",
 def geo_located_heatmap(sum):
     
     fig_dict = dict(data=go.Densitymapbox(
-        lat=summed_arrayray[150][0] if sum else inst_array[150][0] ,
-        lon=summed_arrayray[150][1] if sum else inst_array[150][1],
-        z=summed_arrayray[150][3] if sum else inst_array[150][3],
+        lat=summed_array[0][0] if sum else inst_array[0][0],
+        lon=summed_array[0][1] if sum else inst_array[0][1],
+        z=summed_array[0][2] if sum else inst_array[0][2],
         radius=plot_radius,
         hoverinfo='z',
         coloraxis="coloraxis"),
         layout={},
         frames=[go.Frame(data=go.Densitymapbox(
-            lat=summed_arrayray[i][0] if sum else inst_array[i][0] ,
-            lon=summed_arrayray[i][1] if sum else inst_array[i][1],
-            z=summed_arrayray[i][3] if sum else inst_array[i][3],
+            lat=summed_array[i][0] if sum else inst_array[i][0],
+            lon=summed_array[i][1] if sum else inst_array[i][1],
+            z=summed_array[i][2] if sum else inst_array[i][2],
             radius=plot_radius,
             hoverinfo='z',
             showscale=False,
         ),
-            name=str(emissions_map.H_time_array[i]),
-        ) for i in range(150, 175)]
+            name=str(i + 150),
+        ) for i in range(25)]
     )
 
     fig_dict['layout'] = dict(
@@ -202,7 +202,7 @@ app.layout = html.Div([
                           'position': "relative",
                           # 'box-shadow': "2px 2px 2px lightgrey",
                       },
-                      figure=geo_located_heatmap(emissions_map=emissions_map, sum=True))
+                      figure=geo_located_heatmap(sum=True))
         ], className="six columns"),
 
         html.Div([
@@ -222,7 +222,7 @@ app.layout = html.Div([
                           'position': "relative",
                           # 'box-shadow': "2px 2px 2px lightgrey",
                       },
-                      figure=geo_located_heatmap(emissions_map=emissions_map, sum=False))
+                      figure=geo_located_heatmap(sum=False))
         ], className="six columns"),
     ], style={
         'height': 800,
