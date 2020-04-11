@@ -1,8 +1,6 @@
-import definitions as var_def
 import os
 import numpy as np
 import plotly.graph_objects as go
-import plotly.express as px
 import pickle
 import dash
 import dash_core_components as dcc
