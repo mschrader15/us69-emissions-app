@@ -12,26 +12,51 @@ mapbox_key = "pk.eyJ1IjoibWF4LXNjaHJhZGVyIiwiYSI6ImNrOHQxZ2s3bDAwdXQzbG81NjZpZm9
 
 APP_PATH = str(pathlib.Path(__file__).parent.resolve())
 
-inst_array = pickle.load(open(os.path.join(APP_PATH, os.path.join("data", "inst_array.txt")), 'rb'))
-summed_array = pickle.load(open(os.path.join(APP_PATH, os.path.join("data", "summed_array.txt")), 'rb'))
+data_dict = pickle.load(open(os.path.join(APP_PATH, os.path.join("data", "emissions_data_binned.pkl")), 'rb'))
 
-data_date = '02/14/2020 07:00:00.000'
+data_date = data_dict['params']['start_time']
 data_date_dt = datetime.datetime.strptime(data_date, '%m/%d/%Y %H:%M:%S.%f')
 data_time_string = str(data_date_dt.month) + '/' +  str(data_date_dt.day) + '/' + str(data_date_dt.year)\
-                   #+ ' ' + str(data_date_dt.hour) + ":00:00"
 
-max_plot_value = 10
-max_plot_value_sum = 1000
+max_plot_value = data_dict['params']['max_plot_value']
+max_plot_value_sum = data_dict['params']['max_plot_value_summed']
+
+summed_array = data_dict['data']['summed_array']
+inst_array = data_dict['data']['inst_array']
+step_time_values = data_dict['data']['time_array']
+step_num = range(len(step_time_values))
 
 animation_step_duration = 1000
-sigma = 1.5
-gaussian = False
+#sigma = 1.5
+#gaussian = False
 plot_radius = 20
-summed = True
+#summed = True
 
 colorbar_font = dict(color="black",
                      family="Courier New, monospace",
                      size=14)
+
+colorscale_log = [
+                [0.0, "rgba(0, 255, 204, 0)"],
+                [1. / 10000, "rgb(102, 255, 0)"],
+                [1. / 1000, "rgb(204, 255, 0)"],
+                [1. / 100, "rgb(255, 204, 51)"],
+                [1. / 10, "rgb(255, 102, 51)"],
+                [1.0, "rgb(204,0,0)"],
+             ]
+
+colorscale = [
+                      [0.0, "rgba(0, 255, 204, 0)"],
+                      [0.2, "rgb(0, 255, 51)"],
+                      [0.4, "rgb(204, 255, 0)"],
+                      [0.6, "rgb(255, 204, 51)"],
+                      [0.8, "rgb(255, 102, 51)"],
+                      [1.0, "rgb(204,0,0)"],
+                 ]
+
+tickvals_log = np.around(np.geomspace(1, max_plot_value_sum, 5), 0) #[0,10,100,1000]
+tickvals_log[0] = 0
+tickvalues = np.around(np.linspace(0, max_plot_value, 5), 0)
 
 def geo_located_heatmap(sum):
     
@@ -51,8 +76,8 @@ def geo_located_heatmap(sum):
             hoverinfo='z',
             showscale=False,
         ),
-            name=(data_date_dt + datetime.timedelta(seconds=i + 150)).strftime("%H:%M:%S"),
-        ) for i in range(25)]
+            name=step_time_values[i],
+        ) for i in step_num]
     )
 
     fig_dict['layout'] = dict(
@@ -82,11 +107,13 @@ def geo_located_heatmap(sum):
             cmin=0,
             cmax=max_plot_value_sum if sum else max_plot_value,
             showscale=True,
+            colorscale=colorscale_log if sum else colorscale,
             colorbar=dict(
                 outlinecolor="black",
                 outlinewidth=2,
                 ticks="outside",
                 tickfont=colorbar_font,
+                tickvals=tickvals_log if sum else None,
                 title="(g)" if sum
                 else "(g/s)",
                 titlefont=colorbar_font,
@@ -160,15 +187,6 @@ def geo_located_heatmap(sum):
     #fig.update_yaxes(showline=True, linewidth=2, linecolor='black', mirror=True)
     # return fig_dict
     return fig
-
-
-# fig.write_html("visualization.html")
-
-# geo_located_heatmap(emissions_map=emissions_map, sum=False).show()
-
-# fig.show()
-#
-
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
