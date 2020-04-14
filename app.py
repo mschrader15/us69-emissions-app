@@ -29,7 +29,7 @@ step_num = range(len(step_time_values))
 animation_step_duration = 1000
 #sigma = 1.5
 #gaussian = False
-plot_radius = 20
+plot_radius = 10
 #summed = True
 
 colorbar_font = dict(color="black",
@@ -54,27 +54,72 @@ colorscale = [
                       [1.0, "rgb(204,0,0)"],
                  ]
 
-#tickvals_log = np.geomspace(1e-6, max_plot_value_sum, 5) #[0,10,100,1000]
-tickvals_log = np.around(np.logspace(-6, np.log10(max_plot_value_sum), 5), 3)
-tickvals_log[0:3] = [0]*3
-tickvalues = np.around(np.linspace(0, max_plot_value, 5), 0)
+tickvals_log = np.logspace(np.log10(1e-6), np.log10(max_plot_value_sum), 5)
+tickvals_log = np.linspace(np.log10(1e-4), np.log10(max_plot_value_sum), 7)
+ticktext_log = ['{:g}'.format(float('{:.3g}'.format(10 ** exp))) for exp in tickvals_log]
+#tickvals_log[0:3] = [0]*3
+
+tickvalues = np.around(np.linspace(0, max_plot_value-0.02, 5), 3)
+
+log_color_axis = dict(
+            cmin=0,
+            cmax=np.log10(max_plot_value_sum),
+            showscale=True,
+            colorscale=colorscale_log,
+            colorbar=dict(
+                #dtick="D1",
+                #tick0=0,
+                nticks=5,
+                outlinecolor="black",
+                outlinewidth=2,
+                ticks="outside",
+                tickfont=colorbar_font,
+                tickvals=tickvals_log,
+                ticktext=ticktext_log,
+                tickformat='~g',
+                title="[gal]",
+                titlefont=colorbar_font,
+                # tickformatstops=[dict(dtickrange=[16, 20], )]
+            ))
+
+color_axis = dict(
+            cmin=0,
+            cmax=max_plot_value,
+            showscale=True,
+            colorscale=colorscale,
+            colorbar=dict(
+                outlinecolor="black",
+                outlinewidth=2,
+                ticks="outside",
+                tickfont=colorbar_font,
+                nticks=5,
+                tickvals=tickvalues,
+                title="[gal/hr]",
+                titlefont=colorbar_font,
+                # tickformatstops=[dict(dtickrange=[16, 20], )]
+            ))
+
 
 def geo_located_heatmap(sum):
     
     fig_dict = dict(data=go.Densitymapbox(
         lat=summed_array[0][0] if sum else inst_array[0][0],
         lon=summed_array[0][1] if sum else inst_array[0][1],
-        z=summed_array[0][2] if sum else inst_array[0][2],
+        z=np.log10(summed_array[0][2]) if sum else inst_array[0][2],
+        customdata=summed_array[0][2],
+        hovertemplate='%{customdata}' if sum else None,
         radius=plot_radius,
-        hoverinfo='z',
+        hoverinfo='z' if not sum else None,
         coloraxis="coloraxis"),
         layout={},
         frames=[go.Frame(data=go.Densitymapbox(
             lat=summed_array[i][0] if sum else inst_array[i][0],
             lon=summed_array[i][1] if sum else inst_array[i][1],
-            z=summed_array[i][2] if sum else inst_array[i][2],
+            z=np.log10(summed_array[i][2]) if sum else inst_array[i][2],
+            customdata=summed_array[i][2],
+            hovertemplate='%{customdata}' if sum else None,
             radius=plot_radius,
-            hoverinfo='z',
+            hoverinfo='z' if not sum else None,
             showscale=False,
         ),
             name=step_time_values[i],
@@ -104,24 +149,7 @@ def geo_located_heatmap(sum):
             pitch=0,
             zoom=14.1,
         ),
-        coloraxis=dict(
-            cmin=0,
-            cmax=max_plot_value_sum if sum else max_plot_value,
-            showscale=True,
-            colorscale=colorscale_log if sum else colorscale,
-            colorbar=dict(
-                outlinecolor="black",
-                outlinewidth=2,
-                ticks="outside",
-                tickfont=colorbar_font,
-                #tickformat=".3s",
-                tickvals=tickvals_log if sum else None,
-                title="[gal]" if sum
-                else "[gal/hr]",
-                titlefont=colorbar_font,
-                # tickformatstops=[dict(dtickrange=[16, 20], )]
-            ),
-        )
+        coloraxis=log_color_axis if sum else color_axis
     )
 
     sliders = [
