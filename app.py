@@ -16,7 +16,7 @@ data_dict = pickle.load(open(os.path.join(APP_PATH, os.path.join("data", "emissi
 
 data_date = data_dict['params']['start_time']
 data_date_dt = datetime.datetime.strptime(data_date, '%m/%d/%Y %H:%M:%S.%f')
-data_time_string = str(data_date_dt.month) + '/' +  str(data_date_dt.day) + '/' + str(data_date_dt.year)\
+data_time_string = str(data_date_dt.month) + '/' +  str(data_date_dt.day) + '/' + str(data_date_dt.year)
 
 max_plot_value = data_dict['params']['max_plot_value']
 max_plot_value_sum = data_dict['params']['max_plot_value_summed']
@@ -54,8 +54,9 @@ colorscale = [
                       [1.0, "rgb(204,0,0)"],
                  ]
 
-tickvals_log = np.around(np.geomspace(1, max_plot_value_sum, 5), 0) #[0,10,100,1000]
-tickvals_log[0] = 0
+#tickvals_log = np.geomspace(1e-6, max_plot_value_sum, 5) #[0,10,100,1000]
+tickvals_log = np.around(np.logspace(-6, np.log10(max_plot_value_sum), 5), 3)
+tickvals_log[0:3] = [0]*3
 tickvalues = np.around(np.linspace(0, max_plot_value, 5), 0)
 
 def geo_located_heatmap(sum):
@@ -101,7 +102,7 @@ def geo_located_heatmap(sum):
                 lon=-87.54891
             ),
             pitch=0,
-            zoom=14,
+            zoom=14.1,
         ),
         coloraxis=dict(
             cmin=0,
@@ -113,9 +114,10 @@ def geo_located_heatmap(sum):
                 outlinewidth=2,
                 ticks="outside",
                 tickfont=colorbar_font,
+                #tickformat=".3s",
                 tickvals=tickvals_log if sum else None,
-                title="(g)" if sum
-                else "(g/s)",
+                title="[gal]" if sum
+                else "[gal/hr]",
                 titlefont=colorbar_font,
                 # tickformatstops=[dict(dtickrange=[16, 20], )]
             ),
@@ -210,7 +212,7 @@ app.layout = html.Div([
             }),
     html.Div([
         html.Div([
-            html.H5('Cummulative Fuel Consumption (g)',
+            html.H5('Cumulative Fuel Consumption',
                     style={
                         "text-align": "center",
                         "font-family": colorbar_font['family'],
@@ -233,7 +235,7 @@ app.layout = html.Div([
         ], className="six columns"),
 
         html.Div([
-            html.H5('Instantaneous Fuel Consumption (g/s)',
+            html.H5('Instantaneous Fuel Consumption',
                     style={
                         "text-align": "center",
                         "font-family": colorbar_font['family'],

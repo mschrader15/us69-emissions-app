@@ -3,3 +3,5 @@ venv
 .DS_Store
 .env
 .idea
+static_image_generator.py
+*.png
