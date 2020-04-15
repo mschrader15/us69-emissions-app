@@ -54,33 +54,32 @@ colorscale = [
                       [1.0, "rgb(204,0,0)"],
                  ]
 
-tickvals_log = np.logspace(np.log10(1e-6), np.log10(max_plot_value_sum), 5)
-tickvals_log = np.linspace(np.log10(1e-4), np.log10(max_plot_value_sum), 7)
-ticktext_log = ['{:g}'.format(float('{:.3g}'.format(10 ** exp))) for exp in tickvals_log]
-#tickvals_log[0:3] = [0]*3
+tickvals_log = np.round(np.linspace(np.log10(1e-4), np.log10(max_plot_value_sum), 7), 3)
+tickvals_log[0] = -4
+ticktext_log = ['{:g}'.format(float('{:.1g}'.format((10 ** exp)*60))) for exp in tickvals_log]
+ticktext_log[0] = "0.0"
 
-tickvalues = np.around(np.linspace(0, max_plot_value-0.02, 5), 3)
+#max_plot_value = 1.5 # np.amax(inst_array[30][2]) - 6.9
+tickvalues = np.around(np.linspace(0, np.round(max_plot_value, 0), 7), 3)
+ticktext = [str(val) for val in tickvalues]
+
 
 log_color_axis = dict(
-            cmin=0,
-            cmax=np.log10(max_plot_value_sum),
+            cmin=tickvals_log[0],
+            cmax=tickvals_log[-1],
             showscale=True,
             colorscale=colorscale_log,
             colorbar=dict(
-                #dtick="D1",
-                #tick0=0,
-                nticks=5,
                 outlinecolor="black",
                 outlinewidth=2,
                 ticks="outside",
                 tickfont=colorbar_font,
                 tickvals=tickvals_log,
                 ticktext=ticktext_log,
-                tickformat='~g',
-                title="[gal]",
+                title="[gal]<br /> <br />",
                 titlefont=colorbar_font,
-                # tickformatstops=[dict(dtickrange=[16, 20], )]
-            ))
+            )
+)
 
 color_axis = dict(
             cmin=0,
@@ -92,12 +91,12 @@ color_axis = dict(
                 outlinewidth=2,
                 ticks="outside",
                 tickfont=colorbar_font,
-                nticks=5,
                 tickvals=tickvalues,
-                title="[gal/hr]",
+                ticktext=ticktext,
+                title="[gal/hr]<br /> <br />",
                 titlefont=colorbar_font,
-                # tickformatstops=[dict(dtickrange=[16, 20], )]
-            ))
+            )
+)
 
 
 def geo_located_heatmap(sum):
